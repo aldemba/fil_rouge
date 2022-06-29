@@ -18,38 +18,52 @@ use Symfony\Component\Serializer\Annotation\Groups;
         "get"=>[ 
         'method' => 'get',
         'status' => Response::HTTP_OK,
-        'normalization_context' => ['groups' => ['simple']]
+        'normalization_context' => ['groups' => ['burger:read:simple']]
     ],
     "post" =>[
-        'status' => Response::HTTP_CREATED,
-        'denormalization_context' => ['groups' => ['write:simple','write:all']],
-        'normalization_context' => ['groups' => ['write:simple','write']]
+        'method' => 'post',
+        'normalization_context' => ['groups' => ['burger:read:all']],
+        'denormalization_context' => ['groups' => ['write']],
+        'security' => "is_granted('ROLE_GESTIONNAIRE')",
+        'security_message' => "Vous n'avez pas acces a cette ressource"
+        // 'status' => Response::HTTP_CREATED,
+        // 'denormalization_context' => ['groups' => ['write:simple','write:all']],
+        // 'normalization_context' => ['groups' => ['write:simple','write']]
+        // 'normalization_context' => ['groups' => ['write:simple','write']],
         ]    
     ],
-    itemOperations:["put","get"])]
+    itemOperations:[
+        "get"=>[ 
+        'method' => 'get',
+        'status' => Response::HTTP_OK,
+        'normalization_context' => ['groups' => ['burger:read:all']]
+    ],
+    
+    "put"])]
 class Produit
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(["write:simple", "write:all","simple"])]
-    private $id;
+    #[Groups(['burger:read:simple','burger:read:all'])]
+    protected $id;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(["write:simple", "write:all","simple"])]
-    private $nom;
+    #[Groups(['burger:read:simple','burger:read:all','write'])]
+    protected $nom;
 
-    #[ORM\Column(type: 'object', nullable: true)]
-    #[Groups(["write:simple", "write:all","simple"])]
-    private $image;
+    #[ORM\Column(type: 'string', nullable: true)]
+    protected $image;
 
     #[ORM\Column(type: 'float', nullable: true)]
-    #[Groups(["write:simple", "write:all","simple"])]
-    private $prix;
+    #[Groups(['burger:read:simple','burger:read:all','write'])]
+    protected $prix;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(["write:simple", "write:all","simple"])]
-    private $etat;
+    #[Groups(['burger:read:all'])]
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $isEtat=true;
+
+
 
     public function getId(): ?int
     {
@@ -68,12 +82,12 @@ class Produit
         return $this;
     }
 
-    public function getImage(): ?object
+    public function getImage(): ?string
     {
         return $this->image;
     }
 
-    public function setImage(?object $image): self
+    public function setImage(string $image): self
     {
         $this->image = $image;
 
@@ -92,15 +106,17 @@ class Produit
         return $this;
     }
 
-    public function getEtat(): ?string
+    public function isIsEtat(): ?bool
     {
-        return $this->etat;
+        return $this->isEtat;
     }
 
-    public function setEtat(?string $etat): self
+    public function setIsEtat(?bool $isEtat): self
     {
-        $this->etat = $etat;
+        $this->isEtat = $isEtat;
 
         return $this;
     }
+
+  
 }

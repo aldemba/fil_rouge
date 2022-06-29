@@ -23,8 +23,10 @@ class Taille
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $libelle;
 
+
     #[ORM\ManyToMany(targetEntity: Boisson::class, inversedBy: 'tailles')]
     private $boissons;
+
 
     #[ORM\ManyToOne(targetEntity: Complements::class, inversedBy: 'tailles')]
     private $complements;

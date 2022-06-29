@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BurgerRepository::class)]
 #[ApiResource(
@@ -16,20 +17,35 @@ use Doctrine\Common\Collections\ArrayCollection;
         "get"=>[ 
         'method' => 'get',
         'status' => Response::HTTP_OK,
-        'normalization_context' => ['groups' => ['simple']]
+        'normalization_context' => ['groups' => ['burger:read:simple']]
     ],
         "post"=>[
             'method' => 'post',
-            'status' => Response::HTTP_OK,
-            'denormalization_context' => ['groups' => ['write:simple','write:all']],
-            'normalization_context' => ['groups' => ['write:simple','write']]    
+            'normalization_context' => ['groups' => ['burger:read:all']],
+            'denormalization_context' => ['groups' => ['write']],
+            'security' => "is_granted('ROLE_GESTIONNAIRE')",
+            'security_message' => "Vous n'avez pas acces a cette ressource"
+        
         ],
-        ]
+    ], itemOperations:[
+        "put"=>[ 
+        'method' => 'put',
+        'security' => "is_granted('ROLE_GESTIONNAIRE')",
+        'security_message' => "Vous n'avez pas acces a cette ressource"
+
+        ],"get"
+    ]
+
+
     )]
 class Burger extends Produit
 {
      #[ORM\ManyToMany(targetEntity: Menu::class, inversedBy: 'burgers')]
-     private $menus; public function __construct()
+     private $menus;
+
+     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'burgers')]
+     #[Groups(['burger:read:all','write'])]
+     private $user; public function __construct()
  {
         $this->menus = new ArrayCollection();
  }
@@ -38,9 +54,9 @@ class Burger extends Produit
   * @return Collection<int, Menu>
   */
  public function getMenus(): Collection
- {
-     return $this->menus;
- }
+          {
+              return $this->menus;
+          }
 
      public function addMenu(Menu $menu): self
      {
@@ -54,6 +70,18 @@ class Burger extends Produit
      public function removeMenu(Menu $menu): self
      {
          $this->menus->removeElement($menu);
+
+         return $this;
+     }
+
+     public function getUser(): ?User
+     {
+         return $this->user;
+     }
+
+     public function setUser(?User $user): self
+     {
+         $this->user = $user;
 
          return $this;
      }

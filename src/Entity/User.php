@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -12,12 +14,11 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
-    collectionOperations:[
+    collectionOperations:["get",
         "post",
         "post_register" => [
         "method"=>"post",
         'status' => Response::HTTP_CREATED,
-        // 'path'=>'register/',
         'denormalization_context' => ['groups' => ['user:write']],
         'normalization_context' => ['groups' => ['user:read:simple']]
         ],
@@ -28,24 +29,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['user:read:simple'])]
+    #[Groups(['burger:read:all','write'])]
     private $id;
 
-    #[Groups(['user:read:simple','user:write'])]
+    #[Groups(['burger:read:all'])]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     private $login;
 
     #[ORM\Column(type: 'json')]
-    #[Groups(['user:read:simple'])]
     private $roles = [];
 
 
     #[ORM\Column(type: 'string')]
     private $password;
 
-    
-    #[Groups(['user:write'])]
-    private $plainPassword;
+    // #[Groups(['burger:read:all','write'])]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Burger::class)]
+    private $burgers;
+
+    public function __construct()
+    {
+        $this->burgers = new ArrayCollection();
+    }
+
 
     public function getId(): ?int
     {
@@ -115,5 +121,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, Burger>
+     */
+    public function getBurgers(): Collection
+    {
+        return $this->burgers;
+    }
+
+    public function addBurger(Burger $burger): self
+    {
+        if (!$this->burgers->contains($burger)) {
+            $this->burgers[] = $burger;
+            $burger->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBurger(Burger $burger): self
+    {
+        if ($this->burgers->removeElement($burger)) {
+            // set the owning side to null (unless already changed)
+            if ($burger->getUser() === $this) {
+                $burger->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

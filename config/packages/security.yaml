@@ -34,7 +34,10 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
           - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
-          - { path: ^/api$, roles: IS_AUTHENTICATED_FULLY }
+          - { path: ^/api$, roles: PUBLIC_ACCESS }
+          - { path: ^/api/burgers, roles: PUBLIC_ACCESS, methods: [GET] }
+          - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+
 
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
