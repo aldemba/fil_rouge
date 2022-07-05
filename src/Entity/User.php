@@ -2,27 +2,35 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+use App\Controller\EmailValidateController;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\HttpFoundation\Response;
+use ApiPlatform\Core\Annotation\ApiSubresource;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
     collectionOperations:["get",
-        "post",
+        // "patch"=>[ 
+        //     'path'=>'users/validate/{token}',
+        //     'controller'=>EmailValidateController::class,
+
+        // ],
         "post_register" => [
         "method"=>"post",
-        'status' => Response::HTTP_CREATED,
+        'path'=>'/register',
         'denormalization_context' => ['groups' => ['user:write']],
         'normalization_context' => ['groups' => ['user:read:simple']]
         ],
-        ]
+        
+    ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -30,22 +38,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     #[Groups(['burger:read:all','write'])]
-    private $id;
+    protected $id;
 
-    #[Groups(['burger:read:all'])]
+    #[Groups(['burger:read:all','user:read:simple','user:write'])]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
-    private $login;
+    protected $login;
 
+    #[Groups(['user:write'])]
     #[ORM\Column(type: 'json')]
-    private $roles = [];
+    protected $roles = [];
 
-
+    #[Groups(['user:read:simple'])]
     #[ORM\Column(type: 'string')]
-    private $password;
+    protected $password;
+
+
+    #[SerializedName("password")]
+    #[Groups(['user:write'])]
+    private $plainPassword;
+
 
     // #[Groups(['burger:read:all','write'])]
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Burger::class)]
+    #[ApiSubresource]
     private $burgers;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $isEnable;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $token;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private $expireAt;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $nom;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $prenom;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $telephone;
 
     public function __construct()
     {
@@ -121,6 +155,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+         $this->plainPassword = null;
     }
 
     /**
@@ -149,6 +184,98 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $burger->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * Get the value of plainPassword
+     */ 
+    public function getPlainPassword()
+    {
+        return $this->plainPassword;
+    }
+
+    /**
+     * Set the value of plainPassword
+     *
+     * @return  self
+     */ 
+    public function setPlainPassword($plainPassword)
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
+
+    public function isIsEnable(): ?bool
+    {
+        return $this->isEnable;
+    }
+
+    public function setIsEnable(?bool $isEnable): self
+    {
+        $this->isEnable = $isEnable;
+
+        return $this;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function setToken(?string $token): self
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    public function getExpireAt(): ?\DateTimeImmutable
+    {
+        return $this->expireAt;
+    }
+
+    public function setExpireAt(?\DateTimeImmutable $expireAt): self
+    {
+        $this->expireAt = $expireAt;
+
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(?string $nom): self
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(?string $prenom): self
+    {
+        $this->prenom = $prenom;
+
+        return $this;
+    }
+
+    public function getTelephone(): ?string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(?string $telephone): self
+    {
+        $this->telephone = $telephone;
 
         return $this;
     }

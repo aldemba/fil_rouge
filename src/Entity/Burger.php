@@ -14,6 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: BurgerRepository::class)]
 #[ApiResource(
     collectionOperations:[
+        
         "get"=>[ 
         'method' => 'get',
         'status' => Response::HTTP_OK,

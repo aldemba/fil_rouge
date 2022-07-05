@@ -29,7 +29,6 @@ class ProduitCommande
     public function setQuantiteProduit(?int $quantiteProduit): self
     {
         $this->quantiteProduit = $quantiteProduit;
-
         return $this;
     }
 }

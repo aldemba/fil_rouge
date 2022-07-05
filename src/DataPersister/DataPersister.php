@@ -5,6 +5,7 @@
 namespace App\DataPersister;
 
 
+
 use App\Entity\User;
 use App\Services\MailerService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -39,9 +40,8 @@ class DataPersister implements DataPersisterInterface
      */
     public function persist($data, array $context = [])
     {
-        if ($data->getPassword()) {
-            $data->setPassword(
-                $this->_passwordEncoder->hashPassword($data, $data->getPassword()));
+        if ($data->getplainPassword()) {
+            $data->setPassword( $this->_passwordEncoder->hashPassword($data, $data->getplainPassword()));
                 $data->eraseCredentials();
 
         }

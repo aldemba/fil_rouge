@@ -10,10 +10,18 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: BoissonRepository::class)]
-#[ApiResource()]
+#[ApiResource(
+   collectionOperations:[
+        "post"=>[ 
+        'method' => 'post',
+        'denormalization_context' => ['groups' => ['boisson:write']]
+    ], "get"
+]
+)]
 class Boisson extends Produit
 {
     #[ORM\ManyToMany(targetEntity: Taille::class, mappedBy: 'boissons')]
+    
     private $tailles;
 
     public function __construct()

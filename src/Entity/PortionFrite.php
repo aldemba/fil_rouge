@@ -3,25 +3,72 @@
 namespace App\Entity;
 
 use App\Entity\Produit;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\PortionFriteRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 
 #[ORM\Entity(repositoryClass: PortionFriteRepository::class)]
-#[ApiResource()]
+#[ApiResource(
+    collectionOperations:[
+        "post"=>[ 
+        'method' => 'post',
+        'denormalization_context' => ['groups' => ['portion:read:simple']]
+    ]
+    ]
+
+
+
+)]
 class PortionFrite extends Produit
 {
-    #[ORM\ManyToOne(targetEntity: Complements::class, inversedBy: 'PortionFrites')]
+    // #[ORM\ManyToOne(targetEntity: Complements::class, inversedBy: 'PortionFrites')]
     private $complements;
 
-    public function getComplements(): ?Complements
+    #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'portionfrites')]
+    private $menus;
+
+    public function __construct()
     {
-        return $this->complements;
+        $this->menus = new ArrayCollection();
     }
 
-    public function setComplements(?Complements $complements): self
+    // public function getComplements(): ?Complements
+    // {
+    //     return $this->complements;
+    // }
+
+    // public function setComplements(?Complements $complements): self
+    // {
+    //     $this->complements = $complements;
+
+    //     return $this;
+    // }
+
+    /**
+     * @return Collection<int, Menu>
+     */
+    public function getMenus(): Collection
     {
-        $this->complements = $complements;
+        return $this->menus;
+    }
+
+    public function addMenu(Menu $menu): self
+    {
+        if (!$this->menus->contains($menu)) {
+            $this->menus[] = $menu;
+            $menu->addPortionfrite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMenu(Menu $menu): self
+    {
+        if ($this->menus->removeElement($menu)) {
+            $menu->removePortionfrite($this);
+        }
 
         return $this;
     }

@@ -35,10 +35,13 @@ security:
     access_control:
           - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
           - { path: ^/api$, roles: PUBLIC_ACCESS }
+          - { path: ^/api/register,roles: PUBLIC_ACCESS }
+          - { path: ^/api/catalogues,roles: PUBLIC_ACCESS }
           - { path: ^/api/burgers, roles: PUBLIC_ACCESS, methods: [GET] }
           - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 
+        # - { path: ^/api/register, roles: PUBLIC_ACCESS }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 

@@ -28,7 +28,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
         'security_message' => "Vous n'avez pas acces a cette ressource"
         // 'status' => Response::HTTP_CREATED,
         // 'denormalization_context' => ['groups' => ['write:simple','write:all']],
-        // 'normalization_context' => ['groups' => ['write:simple','write']]
         // 'normalization_context' => ['groups' => ['write:simple','write']],
         ]    
     ],
@@ -45,23 +44,25 @@ class Produit
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['burger:read:simple','burger:read:all'])]
+    #[Groups(['burger:read:simple','burger:read:all','menu:read:simple','menu:read'])] 
     protected $id;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['burger:read:simple','burger:read:all','write'])]
+    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read'])]
     protected $nom;
 
+
+    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read'])]
     #[ORM\Column(type: 'string', nullable: true)]
     protected $image;
 
     #[ORM\Column(type: 'float', nullable: true)]
-    #[Groups(['burger:read:simple','burger:read:all','write'])]
+    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','menu:read'])]
     protected $prix;
 
-    #[Groups(['burger:read:all'])]
+    #[Groups(['burger:read:all','menu:read'])]
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $isEtat=true;
+    protected $isEtat=true;
 
 
 
