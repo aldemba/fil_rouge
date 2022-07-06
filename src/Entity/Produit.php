@@ -43,26 +43,29 @@ class Produit
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    #[Groups(['burger:read:simple','burger:read:all','menu:read:simple','menu:read'])] 
+#[ORM\Column(type: 'integer')]
+    #[Groups(['burger:read:simple','burger:read:all','menu:read:simple','menu:read',"menu:ajouter"])] 
     protected $id;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read'])]
+    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read','menu:lecture'])]
     protected $nom;
 
 
-    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read'])]
+    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read','menu:lecture'])]
     #[ORM\Column(type: 'string', nullable: true)]
     protected $image;
 
     #[ORM\Column(type: 'float', nullable: true)]
-    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','menu:read'])]
+    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','menu:read','menu:lecture'])]
     protected $prix;
 
     #[Groups(['burger:read:all','menu:read'])]
     #[ORM\Column(type: 'boolean', nullable: true)]
     protected $isEtat=true;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'produits')]
+    private $user;
 
 
 
@@ -115,6 +118,18 @@ class Produit
     public function setIsEtat(?bool $isEtat): self
     {
         $this->isEtat = $isEtat;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

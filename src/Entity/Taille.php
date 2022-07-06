@@ -26,7 +26,7 @@ class Taille
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['taille:write','menu:read:simple'])]
+    #[Groups(['taille:write','menu:read:simple',"menu:ajouter"])]
     private $id;
 
     #[Groups(['taille:write','menu:read'])]
@@ -40,22 +40,30 @@ class Taille
 
 
     
-    #[ORM\ManyToMany(targetEntity: Boisson::class, inversedBy: 'tailles')]
-    private $boissons;
+    // #[ORM\ManyToMany(targetEntity: Boisson::class, inversedBy: 'tailles')]
+    // private $boissons;
 
 
     // #[ORM\ManyToOne(targetEntity: Complements::class, inversedBy: 'tailles')]
     private $complements;
 
-    #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'tailles')]
-    private $menus;
-
+    #[ORM\OneToMany(mappedBy: 'taille', targetEntity: MenuTaille::class)]
+    private $menuTailles;
 
     public function __construct()
     {
-        $this->boissons = new ArrayCollection();
-        $this->menus = new ArrayCollection();
+        $this->menuTailles = new ArrayCollection();
     }
+
+    // #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'tailles')]
+    // private $menus;
+
+
+    // public function __construct()
+    // {
+    //     $this->boissons = new ArrayCollection();
+    //     $this->menus = new ArrayCollection();
+    // }
 
     public function getId(): ?int
     {
@@ -130,20 +138,50 @@ class Taille
         return $this->menus;
     }
 
-    public function addMenu(Menu $menu): self
+    // public function addMenu(Menu $menu): self
+    // {
+    //     if (!$this->menus->contains($menu)) {
+    //         $this->menus[] = $menu;
+    //         $menu->addTaille($this);
+    //     }
+
+    //     return $this;
+    // }
+
+    // public function removeMenu(Menu $menu): self
+    // {
+    //     if ($this->menus->removeElement($menu)) {
+    //         $menu->removeTaille($this);
+    //     }
+
+    //     return $this;
+    // }
+
+    /**
+     * @return Collection<int, MenuTaille>
+     */
+    public function getMenuTailles(): Collection
     {
-        if (!$this->menus->contains($menu)) {
-            $this->menus[] = $menu;
-            $menu->addTaille($this);
+        return $this->menuTailles;
+    }
+
+    public function addMenuTaille(MenuTaille $menuTaille): self
+    {
+        if (!$this->menuTailles->contains($menuTaille)) {
+            $this->menuTailles[] = $menuTaille;
+            $menuTaille->setTaille($this);
         }
 
         return $this;
     }
 
-    public function removeMenu(Menu $menu): self
+    public function removeMenuTaille(MenuTaille $menuTaille): self
     {
-        if ($this->menus->removeElement($menu)) {
-            $menu->removeTaille($this);
+        if ($this->menuTailles->removeElement($menuTaille)) {
+            // set the owning side to null (unless already changed)
+            if ($menuTaille->getTaille() === $this) {
+                $menuTaille->setTaille(null);
+            }
         }
 
         return $this;

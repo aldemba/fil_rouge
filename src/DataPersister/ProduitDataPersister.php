@@ -11,58 +11,70 @@ use App\Entity\Produit;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Core\DataPersister\DataPersisterInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\Security;
 
 /**
-*
-*/
+ *
+ */
 class ProduitDataPersister implements DataPersisterInterface
 {
-private $_entityManager;
+    private $_entityManager;
+    private $security;
+    // private $prix=0;
 
 
-public function __construct(EntityManagerInterface $entityManager) {
-$this->_entityManager = $entityManager;
-}
 
-/**
-* {@inheritdoc}
-*/
-public function supports($data, array $context = []): bool
-{
-return $data instanceof Produit;
-}
+    public function __construct(EntityManagerInterface $entityManager, Security $security)
+    {
+        $this->_entityManager = $entityManager;
+        $this->security = $security;
+    }
 
-/**
-* @param Produit $data
-*/
-public function persist($data, array $context = [])
-{
-    if($data instanceof Menu) {
-        $prix=0;
-        foreach($data->getBurgers() as $burger){
-        $prix += $burger->getPrix();
+    /**
+     * {@inheritdoc}
+     */
+    public function supports($data, array $context = []): bool
+    {
+        return $data instanceof Produit;
+    }
+
+    /**
+     * @param Produit $data
+     */
+    public function persist($data, array $context = [])
+    {
+        if ($data instanceof Produit) {
+            $data->setUser($this->security->getUser());
         }
-        foreach($data->getPortionfrites() as $portionfrite){
-        $prix+=$portionfrite->getPrix();
-        }
-        foreach($data->getTailles() as $taille){
-        $prix+=$taille->getPrix();
-        }
-        $data->setPrix($prix);
-        
-        }
-        
-$this->_entityManager->persist($data);
 
-$this->_entityManager->flush();
-}
+        if ($data instanceof Menu) {
+             $prix = 0;
+            foreach ($data->getMenuBurgers() as $burger){
+                $prix+= $burger->getBurger()->getPrix() * $burger->getQuantite();
+              
+                
+            }
+            foreach ($data->getMenuPortions() as $portionfrite){
+                $prix+= $portionfrite->getPortionfrite()->getPrix() * $portionfrite->getQuantite();
 
-/**
-* {@inheritdoc}
-*/
-public function remove($data, array $context = [])
-{
-$this->_entityManager->remove($data);
-$this->_entityManager->flush();
-}
+            }
+            foreach ($data->getMenuTailles() as $taille){
+                $prix+= $taille->getTaille()->getPrix() * $taille->getQuantite();
+            }
+             $data->setPrix($prix);
+        }
+
+        $this->_entityManager->persist($data);
+
+        $this->_entityManager->flush();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove($data, array $context = [])
+    {
+        $this->_entityManager->remove($data);
+        $this->_entityManager->flush();
+    }
 }

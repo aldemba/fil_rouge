@@ -13,77 +13,98 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BurgerRepository::class)]
 #[ApiResource(
-    collectionOperations:[
-        
-        "get"=>[ 
-        'method' => 'get',
-        'status' => Response::HTTP_OK,
-        'normalization_context' => ['groups' => ['burger:read:simple']]
-    ],
-        "post"=>[
+    collectionOperations: [
+
+        "get" => [
+            'method' => 'get',
+            'status' => Response::HTTP_OK,
+            'normalization_context' => ['groups' => ['burger:read:simple']]
+        ],
+        "post" => [
             'method' => 'post',
             'normalization_context' => ['groups' => ['burger:read:all']],
             'denormalization_context' => ['groups' => ['write']],
             'security' => "is_granted('ROLE_GESTIONNAIRE')",
             'security_message' => "Vous n'avez pas acces a cette ressource"
-        
-        ],
-    ], itemOperations:[
-        "put"=>[ 
-        'method' => 'put',
-        'security' => "is_granted('ROLE_GESTIONNAIRE')",
-        'security_message' => "Vous n'avez pas acces a cette ressource"
 
-        ],"get"
+        ],
+    ],
+    itemOperations: [
+        "put" => [
+            'method' => 'put',
+            'security' => "is_granted('ROLE_GESTIONNAIRE')",
+            'security_message' => "Vous n'avez pas acces a cette ressource"
+
+        ], "get"
     ]
 
 
-    )]
+)]
 class Burger extends Produit
 {
-     #[ORM\ManyToMany(targetEntity: Menu::class, inversedBy: 'burgers')]
-     private $menus;
+    #[ORM\ManyToMany(targetEntity: Menu::class, inversedBy: 'burgers')]
+    private $menus;
 
-     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'burgers')]
-     #[Groups(['burger:read:all','write'])]
-     private $user; public function __construct()
- {
+    #[ORM\OneToMany(mappedBy: 'burger', targetEntity: MenuBurger::class)]
+    private $menuBurgers;
+
+    public function __construct()
+    {
         $this->menus = new ArrayCollection();
- }
+        $this->menuBurgers = new ArrayCollection();
+    }
 
- /**
-  * @return Collection<int, Menu>
-  */
- public function getMenus(): Collection
-          {
-              return $this->menus;
-          }
+    /**
+     * @return Collection<int, Menu>
+     */
+    public function getMenus(): Collection
+    {
+        return $this->menus;
+    }
 
-     public function addMenu(Menu $menu): self
-     {
-         if (!$this->menus->contains($menu)) {
-             $this->menus[] = $menu;
-         }
+    public function addMenu(Menu $menu): self
+    {
+        if (!$this->menus->contains($menu)) {
+            $this->menus[] = $menu;
+        }
 
-         return $this;
-     }
+        return $this;
+    }
 
-     public function removeMenu(Menu $menu): self
-     {
-         $this->menus->removeElement($menu);
+    public function removeMenu(Menu $menu): self
+    {
+        $this->menus->removeElement($menu);
 
-         return $this;
-     }
+        return $this;
+    }
 
-     public function getUser(): ?User
-     {
-         return $this->user;
-     }
+    /**
+     * @return Collection<int, MenuBurger>
+     */
+    public function getMenuBurgers(): Collection
+    {
+        return $this->menuBurgers;
+    }
 
-     public function setUser(?User $user): self
-     {
-         $this->user = $user;
+    public function addMenuBurger(MenuBurger $menuBurger): self
+    {
+        if (!$this->menuBurgers->contains($menuBurger)) {
+            $this->menuBurgers[] = $menuBurger;
+            $menuBurger->setBurger($this);
+        }
 
-         return $this;
-     }
+        return $this;
+    }
+
+    public function removeMenuBurger(MenuBurger $menuBurger): self
+    {
+        if ($this->menuBurgers->removeElement($menuBurger)) {
+            // set the owning side to null (unless already changed)
+            if ($menuBurger->getBurger() === $this) {
+                $menuBurger->setBurger(null);
+            }
+        }
+
+        return $this;
+    }
 }
