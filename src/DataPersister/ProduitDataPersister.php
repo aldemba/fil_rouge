@@ -10,6 +10,7 @@ use App\Entity\Menu;
 use App\Entity\Produit;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Core\DataPersister\DataPersisterInterface;
+use App\Services\PriceMenuService;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Security;
 
@@ -20,14 +21,18 @@ class ProduitDataPersister implements DataPersisterInterface
 {
     private $_entityManager;
     private $security;
-    // private $prix=0;
+    private $price;
 
 
 
-    public function __construct(EntityManagerInterface $entityManager, Security $security)
+    public function __construct(EntityManagerInterface $entityManager, Security $security, PriceMenuService $price)
     {
         $this->_entityManager = $entityManager;
         $this->security = $security;
+        $this->price = $price;
+
+        
+
     }
 
     /**
@@ -48,20 +53,22 @@ class ProduitDataPersister implements DataPersisterInterface
         }
 
         if ($data instanceof Menu) {
-             $prix = 0;
-            foreach ($data->getMenuBurgers() as $burger){
-                $prix+= $burger->getBurger()->getPrix() * $burger->getQuantite();
+
+            $data->setPrix($this->price->Calculprice($data));
+            //  $prix = 0;
+            // foreach ($data->getMenuBurgers() as $burger){
+            //     $prix+= $burger->getBurger()->getPrix() * $burger->getQuantite();
               
                 
-            }
-            foreach ($data->getMenuPortions() as $portionfrite){
-                $prix+= $portionfrite->getPortionfrite()->getPrix() * $portionfrite->getQuantite();
+            // }
+            // foreach ($data->getMenuPortions() as $portionfrite){
+            //     $prix+= $portionfrite->getPortionfrite()->getPrix() * $portionfrite->getQuantite();
 
-            }
-            foreach ($data->getMenuTailles() as $taille){
-                $prix+= $taille->getTaille()->getPrix() * $taille->getQuantite();
-            }
-             $data->setPrix($prix);
+            // }
+            // foreach ($data->getMenuTailles() as $taille){
+            //     $prix+= $taille->getTaille()->getPrix() * $taille->getQuantite();
+            // }
+            //  $data->setPrix($prix);
         }
 
         $this->_entityManager->persist($data);

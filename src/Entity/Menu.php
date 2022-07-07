@@ -9,6 +9,9 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+
+
 
 #[ORM\Entity(repositoryClass: MenuRepository::class)]
 #[ApiResource(
@@ -24,18 +27,31 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ]
     
 )]
+
+
+
 class Menu extends Produit
 
 {
 #[Groups(["menu:ajouter"])]
     protected $nom;
 
-#[Groups(["menu:ajouter"])]
+// #[Groups(["menu:ajouter"])]
     protected $prix;
+
+
+
 
 #[Groups(["menu:ajouter"])]
     protected $image;
 
+
+    #[Assert\Valid]
+    #[Assert\Count(
+    min:1,
+    minMessage:"il faut au moins un burger dans le menu"
+    
+    )]
 #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuBurger::class,cascade:["persist"])]
 #[Groups(["menu:ajouter"])]
 private $menuBurgers;
@@ -44,6 +60,13 @@ private $menuBurgers;
 #[Groups(["menu:ajouter"])]
 private $menuPortions;
 
+
+#[Assert\Valid]
+    #[Assert\Count(
+    min:1,
+    minMessage:"il faut au moins un burger dans le menu"
+    
+    )]
 #[Groups(["menu:ajouter"])]
 #[ORM\OneToMany(mappedBy: 'menu', targetEntity: MenuTaille::class,cascade:["persist"])]
 private $menuTailles;

@@ -6,6 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\MenuTailleRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: MenuTailleRepository::class)]
 #[ApiResource()]
@@ -15,13 +17,15 @@ class MenuTaille
     #[ORM\Id]
     #[ORM\GeneratedValue]
 // #[Groups(["menu:ajouter"])]
-#[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
+#[Assert\Positive(message:"la quantite doit etre superieur a 0")]
 #[Groups(["menu:ajouter"])]
 #[ORM\Column(type: 'integer', nullable: true)]
     private $quantite;
 
+#[Assert\NotBlank(message:"le menu doit contenir au moins une taille")]
 #[Groups(["menu:ajouter"])]
 #[ORM\ManyToOne(targetEntity: Taille::class, inversedBy: 'menuTailles')]
     private $taille;
