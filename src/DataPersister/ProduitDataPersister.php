@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Core\DataPersister\DataPersisterInterface;
 use App\Services\PriceMenuService;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Security;
 
 /**
@@ -22,6 +23,8 @@ class ProduitDataPersister implements DataPersisterInterface
     private $_entityManager;
     private $security;
     private $price;
+   
+
 
 
 
@@ -31,7 +34,6 @@ class ProduitDataPersister implements DataPersisterInterface
         $this->security = $security;
         $this->price = $price;
 
-        
 
     }
 
@@ -55,21 +57,16 @@ class ProduitDataPersister implements DataPersisterInterface
         if ($data instanceof Menu) {
 
             $data->setPrix($this->price->Calculprice($data));
-            //  $prix = 0;
-            // foreach ($data->getMenuBurgers() as $burger){
-            //     $prix+= $burger->getBurger()->getPrix() * $burger->getQuantite();
-              
-                
-            // }
-            // foreach ($data->getMenuPortions() as $portionfrite){
-            //     $prix+= $portionfrite->getPortionfrite()->getPrix() * $portionfrite->getQuantite();
-
-            // }
-            // foreach ($data->getMenuTailles() as $taille){
-            //     $prix+= $taille->getTaille()->getPrix() * $taille->getQuantite();
-            // }
-            //  $data->setPrix($prix);
+            
         }
+
+        if ($data instanceof Produit) {
+            if($data->getFileImage()){
+                $data->setImage(\file_get_contents($data->getFileImage()));
+                
+            }
+        }
+
 
         $this->_entityManager->persist($data);
 
@@ -85,3 +82,17 @@ class ProduitDataPersister implements DataPersisterInterface
         $this->_entityManager->flush();
     }
 }
+//  $prix = 0;
+            // foreach ($data->getMenuBurgers() as $burger){
+            //     $prix+= $burger->getBurger()->getPrix() * $burger->getQuantite();
+              
+                
+            // }
+            // foreach ($data->getMenuPortions() as $portionfrite){
+            //     $prix+= $portionfrite->getPortionfrite()->getPrix() * $portionfrite->getQuantite();
+
+            // }
+            // foreach ($data->getMenuTailles() as $taille){
+            //     $prix+= $taille->getTaille()->getPrix() * $taille->getQuantite();
+            // }
+            //  $data->setPrix($prix);

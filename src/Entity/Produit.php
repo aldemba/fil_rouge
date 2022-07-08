@@ -7,6 +7,7 @@ use App\Repository\ProduitRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\InheritanceType("JOINED")]
 #[ORM\DiscriminatorColumn(name:"type",type:"string")]
@@ -43,7 +44,7 @@ class Produit
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-#[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: 'integer')]
     #[Groups(['burger:read:simple','burger:read:all','menu:read:simple','menu:read',"menu:ajouter"])] 
     protected $id;
 
@@ -52,9 +53,9 @@ class Produit
     protected $nom;
 
 
-    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read','menu:lecture'])]
-    #[ORM\Column(type: 'string', nullable: true)]
-    protected $image;
+    // #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read','menu:lecture'])]
+    // #[ORM\Column(type: 'blob', nullable: true)]
+    // protected $image;
 
     #[ORM\Column(type: 'float', nullable: true)]
     #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','menu:read','menu:lecture'])]
@@ -66,6 +67,15 @@ class Produit
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'produits')]
     private $user;
+
+
+    #[Groups(['menu:ajouter'])]
+    #[SerializedName("image")]
+    protected string $fileImage;
+
+    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read','menu:lecture','menu:ajouter'])]
+    #[ORM\Column(type: 'blob', nullable: true)]
+    private $image;
 
 
 
@@ -86,17 +96,7 @@ class Produit
         return $this;
     }
 
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
-
-    public function setImage(string $image): self
-    {
-        $this->image = $image;
-
-        return $this;
-    }
+    
 
     public function getPrix(): ?float
     {
@@ -135,4 +135,58 @@ class Produit
     }
 
   
+
+    /**
+     * Get the value of fileImage
+     */ 
+    public function getFileImage()
+    {
+        return $this->fileImage;
+    }
+
+    /**
+     * Set the value of fileImage
+     *
+     * @return  self
+     */ 
+    public function setFileImage($fileImage)
+    {
+        $this->fileImage = $fileImage;
+
+        return $this;
+    }
+
+    // /**
+    //  * Get the value of image
+    //  */ 
+    // public function getImage()
+    // {
+    //     // return $this->image;
+    //     return is_resource($this->image) ? utf8_encode(base64_encode(stream_get_contents($this->image))):$this->image;
+
+    // }
+
+    // /**
+    //  * Set the value of image
+    //  *
+    //  * @return  self
+    //  */ 
+    // public function setImage($image)
+    // {
+    //     $this->image = $image;
+
+    //     return $this;
+    // }
+
+    public function getImage()
+    {
+     return (base64_encode(($this->image)));
+    }
+
+    public function setImage($image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
 }
