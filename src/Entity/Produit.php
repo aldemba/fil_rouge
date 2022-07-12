@@ -45,11 +45,11 @@ class Produit
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['burger:read:simple','burger:read:all','menu:read:simple','menu:read',"menu:ajouter"])] 
+    #[Groups(['burger:read:all','menu:read:simple','menu:read',"menu:ajouter",'taille:write'])] 
     protected $id;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read','menu:lecture'])]
+    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read','menu:lecture','portion:write','taille:write','lister:boisson','lister:menu','lister:portion'])]
     protected $nom;
 
 
@@ -58,7 +58,7 @@ class Produit
     // protected $image;
 
     #[ORM\Column(type: 'float', nullable: true)]
-    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','menu:read','menu:lecture'])]
+    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','menu:read','menu:lecture','portion:write','lister:boisson','lister:menu','lister:portion'])]
     protected $prix;
 
     #[Groups(['burger:read:all','menu:read'])]
@@ -69,14 +69,22 @@ class Produit
     private $user;
 
 
-    #[Groups(['menu:ajouter'])]
+    // #[Groups(['menu:ajouter'])]
     #[SerializedName("image")]
-    protected string $fileImage;
+    protected string $fileImage="";
 
-    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read','menu:lecture','menu:ajouter'])]
+
+    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read','menu:lecture','portion:write','taille:write','lister:boisson','lister:menu','lister:portion'])]
     #[ORM\Column(type: 'blob', nullable: true)]
     private $image;
 
+    // #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read','menu:lecture','menu:ajouter'])]
+    
+    
+    // #[ORM\Column(type: 'blob', nullable: true)]
+    // private $image;
+
+    
 
 
     public function getId(): ?int
@@ -178,10 +186,24 @@ class Produit
     //     return $this;
     // }
 
+    // public function getImage()
+    // {
+    //  return (base64_encode(($this->image)));
+    // }
+
+    // public function setImage($image): self
+    // {
+    //     $this->image = $image;
+
+    //     return $this;
+    // }
+
     public function getImage()
     {
-     return (base64_encode(($this->image)));
-    }
+        return (base64_encode(($this->image)));
+    
+    } 
+
 
     public function setImage($image): self
     {

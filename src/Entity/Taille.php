@@ -14,7 +14,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
     collectionOperations:[
         "post"=>[ 
         'method' => 'post',
-        'denormalization_context' => ['groups' => ['taille:write']]
+        'denormalization_context' => ['groups' => ['taille:write']],
+        'normalization_context' => ['groups' => ['taille:read']],
+        'security' => "is_granted('ROLE_GESTIONNAIRE')",
+        'security_message' => "Vous n'avez pas acces a cette ressource"
     ],"get"
 ]
 
@@ -29,19 +32,19 @@ class Taille
     #[Groups(['taille:write','menu:read:simple',"menu:ajouter"])]
     private $id;
 
-    #[Groups(['taille:write','menu:read'])]
+    #[Groups(['taille:write','menu:read','taille:read'])]
     #[ORM\Column(type: 'float', nullable: true)]
     private $prix;
 
 
-    #[Groups(['taille:write'])]
+    #[Groups(['taille:write','taille:read'])]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $libelle;
 
 
-    
-    // #[ORM\ManyToMany(targetEntity: Boisson::class, inversedBy: 'tailles')]
-    // private $boissons;
+     #[Groups(['taille:write'])]
+     #[ORM\ManyToMany(targetEntity: Boisson::class, inversedBy: 'tailles')]
+     private $boissons;
 
 
     // #[ORM\ManyToOne(targetEntity: Complements::class, inversedBy: 'tailles')]
@@ -53,6 +56,7 @@ class Taille
     public function __construct()
     {
         $this->menuTailles = new ArrayCollection();
+        $this->boissons = new ArrayCollection();
     }
 
     // #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'tailles')]
@@ -130,13 +134,13 @@ class Taille
     //     return $this;
     // }
 
-    /**
-     * @return Collection<int, Menu>
-     */
-    public function getMenus(): Collection
-    {
-        return $this->menus;
-    }
+    // /**
+    //  * @return Collection<int, Menu>
+    //  */
+    // public function getMenus(): Collection
+    // {
+    //     return $this->menus;
+    // }
 
     // public function addMenu(Menu $menu): self
     // {

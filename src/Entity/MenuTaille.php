@@ -30,6 +30,7 @@ class MenuTaille
 #[ORM\ManyToOne(targetEntity: Taille::class, inversedBy: 'menuTailles')]
     private $taille;
 
+    
     #[ORM\ManyToOne(targetEntity: Menu::class, inversedBy: 'menuTailles')]
     private $menu;
 

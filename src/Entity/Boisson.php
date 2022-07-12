@@ -14,8 +14,14 @@ use Doctrine\Common\Collections\ArrayCollection;
    collectionOperations:[
         "post"=>[ 
         'method' => 'post',
-        'denormalization_context' => ['groups' => ['boisson:write']]
-    ], "get"
+        'denormalization_context' => ['groups' => ['boisson:write']],
+        'normalization_context' => ['groups' => ['boisson:read']]
+    ], "get"=>[
+
+        'method' => 'get',
+        'normalization_context' => ['groups' => ['lister:boisson']]
+
+    ]
 ]
 )]
 class Boisson extends Produit

@@ -12,10 +12,23 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PortionFriteRepository::class)]
 #[ApiResource(
-   
+    collectionOperations:[
+        "post"=>[ 
+        'method' => 'post',
+        'denormalization_context' => ['groups' => ['portion:write']],
+        'security' => "is_granted('ROLE_GESTIONNAIRE')",
+        'security_message' => "Vous n'avez pas acces a cette ressource"
+
+    ],"get"=>[
+        'method' => 'get',
+        'normalization_context' => ['groups' => ['lister:portion']]
 
 
+    ]
+]
 
+       
+    
 )]
 class PortionFrite extends Produit
 {

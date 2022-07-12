@@ -16,7 +16,7 @@ class MenuBurger
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-#[Groups(["menu:ajouter"])]
+// #[Groups(["menu:ajouter"])]
 
 #[ORM\Column(type: 'integer')]
     private $id;

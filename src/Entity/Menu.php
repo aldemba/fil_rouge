@@ -23,7 +23,12 @@ use Symfony\Component\Validator\Constraints as Assert;
         'security' => "is_granted('ROLE_GESTIONNAIRE')",
         'security_message' => "Vous n'avez pas acces a cette ressource"
         // 'denormalization_context' => ['groups' => ['menu:read:simple']]
-    ],"get"
+    ],"get"=>[
+
+        'method' => 'get',
+        'normalization_context' => ['groups' => ['lister:menu']]
+
+    ]
     ]
     
 )]
@@ -37,10 +42,7 @@ class Menu extends Produit
     protected $nom;
 
 // #[Groups(["menu:ajouter"])]
-    protected $prix;
-
-
-
+    // protected $prix;
 
 #[Groups(["menu:ajouter"])]
     protected $image;
