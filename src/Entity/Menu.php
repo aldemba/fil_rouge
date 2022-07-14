@@ -38,14 +38,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Menu extends Produit
 
 {
-#[Groups(["menu:ajouter"])]
+
+
+    #[Groups(['menu:ajouter'])]
     protected $nom;
 
-// #[Groups(["menu:ajouter"])]
-    // protected $prix;
+    #[Groups(['menu:ajouter'])]
+    protected $prix;
 
-#[Groups(["menu:ajouter"])]
-    protected $image;
 
 
     #[Assert\Valid]

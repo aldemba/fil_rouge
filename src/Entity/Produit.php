@@ -49,7 +49,7 @@ class Produit
     protected $id;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read','menu:lecture','portion:write','taille:write','lister:boisson','lister:menu','lister:portion'])]
+    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read','menu:lecture','portion:write','taille:write','lister:boisson','lister:menu','lister:portion','portion:read'])]
     protected $nom;
 
 
@@ -58,7 +58,7 @@ class Produit
     // protected $image;
 
     #[ORM\Column(type: 'float', nullable: true)]
-    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','menu:read','menu:lecture','portion:write','lister:boisson','lister:menu','lister:portion'])]
+    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','menu:read','menu:lecture','portion:write','lister:boisson','lister:menu','lister:portion','portion:read'])]
     protected $prix;
 
     #[Groups(['burger:read:all','menu:read'])]
@@ -69,17 +69,17 @@ class Produit
     private $user;
 
 
-    // #[Groups(['menu:ajouter'])]
-    #[SerializedName("image")]
+    #[Groups(['menu:ajouter','write','portion:write'])]
+    #[SerializedName("images")]
     protected string $fileImage="";
 
 
-    #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read','menu:lecture','portion:write','taille:write','lister:boisson','lister:menu','lister:portion'])]
+    #[Groups(['burger:read:simple','burger:read:all','portion:read:simple','boisson:write','menu:read:simple','menu:read','menu:lecture','taille:write','lister:boisson','lister:menu','lister:portion','portion:read'])]
     #[ORM\Column(type: 'blob', nullable: true)]
     private $image;
 
     // #[Groups(['burger:read:simple','burger:read:all','write','portion:read:simple','boisson:write','menu:read:simple','menu:read','menu:lecture','menu:ajouter'])]
-    
+     
     
     // #[ORM\Column(type: 'blob', nullable: true)]
     // private $image;

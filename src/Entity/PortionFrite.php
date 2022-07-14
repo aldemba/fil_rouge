@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         "post"=>[ 
         'method' => 'post',
         'denormalization_context' => ['groups' => ['portion:write']],
+        'normalization_context' => ['groups' => ['portion:read']],
         'security' => "is_granted('ROLE_GESTIONNAIRE')",
         'security_message' => "Vous n'avez pas acces a cette ressource"
 
